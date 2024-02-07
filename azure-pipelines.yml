@@ -1,0 +1,31 @@
+# Starter pipeline - Deploy de alterfatos do powerbi em esteira ci/cd
+pr:
+  branches:
+    include:
+    - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install requests azure-identity
+  displayName: 'Instalar dependências'
+
+- script: |
+    python deployment.py
+  displayName: 'Executar script Python para deploy no Power BI'
+  env:
+    AZURE_TENANT_ID: $(tenantId)
+    AZURE_CLIENT_ID: $(clientId)
+    AZURE_CLIENT_SECRET: $(clientSecret)
+    POWERBI_PIPELINE_ID: $(pipelineId)
+    POWERBI_SOURCE_STAGE_ORDER: $(sourceStageOrder)
+    POWERBI_NOTE: $(note)
+
